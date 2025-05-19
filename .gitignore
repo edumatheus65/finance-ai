@@ -34,3 +34,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# db
+finance-ai/data-base/
+finance-ai/data-base/postgres-data/
+
+
