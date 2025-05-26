@@ -1,7 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import { Button } from "../_components/ui/button";
+import { signIn } from "next-auth/react";
 
 const LoginPage = () => {
+  const handleLoginWithGoogleClick = () => {
+    signIn("google", { callbackUrl: "/" });
+  };
+
   return (
     <div className="grid h-full grid-cols-2">
       {/* Esquerda */}
@@ -21,7 +28,9 @@ const LoginPage = () => {
           facilitando o controle do seu orçamento.
         </p>
 
-        <Button className="mr-2">Fazer Login ou Criar Conta</Button>
+        <Button className="mr-2" onClick={handleLoginWithGoogleClick}>
+          Fazer Login ou Criar Conta
+        </Button>
       </div>
       {/* Direira */}
       <div className="relative h-full w-full">
