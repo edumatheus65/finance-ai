@@ -2,9 +2,12 @@ import { DataTable } from "../_components/ui/data-table";
 import { db } from "../_lib/prisma";
 import { transactionsColumns } from "./_collumns";
 import AddTransactionButton from "../_components/add-transaction-button";
+import { serializeTransactions } from "../_lib/utils";
 
 const TransactionsPage = async () => {
-  const transactions = await db.transaction.findMany({});
+  const rawTransactions = await db.transaction.findMany({});
+  const transactions = serializeTransactions(rawTransactions);
+
   return (
     <div className="p-6 space-y-6">
       {/* Titulo do Botão */}
