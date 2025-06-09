@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Mulish } from "next/font/google";
 import "./globals.css";
 import AuthProviders from "./_providers/auth";
+import { Toaster } from "sonner";
 
 const mulish = Mulish({
   subsets: ["latin-ext"],
@@ -20,7 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${mulish.className} antialiased dark`}>
-        <AuthProviders>{children}</AuthProviders>
+        <AuthProviders>
+          {children}
+          <Toaster />
+        </AuthProviders>
       </body>
     </html>
   );

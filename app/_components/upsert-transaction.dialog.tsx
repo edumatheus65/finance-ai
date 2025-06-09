@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -41,6 +43,8 @@ import {
 } from "../_constants/transactions";
 import { upsertTransaction } from "../_actions/add-transaction";
 import { parseISO } from "date-fns";
+import { useEffect } from "react";
+import { showErrorToast, showSuccessToast } from "../_lib/toast";
 
 const formSchema = z.object({
   name: z.string().trim().min(1, {
@@ -98,13 +102,30 @@ const UpsertTransactionDialog = ({
         },
   });
 
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset({
+        ...defaultValues,
+        date:
+          typeof defaultValues.date === "string"
+            ? parseISO(defaultValues.date)
+            : defaultValues.date,
+      });
+    }
+  }, [defaultValues, form]);
+
   const onSubmit = async (data: FormSchema) => {
     try {
       await upsertTransaction({ ...data, id: transactionId });
       setIsOpen(false);
       form.reset();
+
+      showSuccessToast(transactionId);
     } catch (error) {
       console.error(error);
+      showErrorToast(
+        `Ocorreu um erro ao ${isUpdate ? "atualizar" : "criar"} a transação.`,
+      );
     }
   };
 
