@@ -3,8 +3,17 @@ import { db } from "../_lib/prisma";
 import { transactionsColumns } from "./_collumns";
 import AddTransactionButton from "../_components/add-transaction-button";
 import NavBar from "../_components/navbar";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
 
 const TransactionsPage = async () => {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user.id) {
+    redirect("/login");
+  }
+
   const transactions = JSON.parse(
     JSON.stringify(await db.transaction.findMany({})),
   );
