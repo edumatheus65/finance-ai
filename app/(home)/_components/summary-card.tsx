@@ -6,12 +6,25 @@ import {
 } from "lucide-react";
 import SummaryCards from "./summary-cards";
 import { db } from "@/app/_lib/prisma";
+import { getMonthDateRange } from "@/app/_lib/date-utils";
 
-const SummaryCard = async () => {
+interface SummaryCardProps {
+  month: string;
+}
+
+const SummaryCard = async ({ month }: SummaryCardProps) => {
+  const { from, to } = getMonthDateRange(month);
+
+  const where = {
+    date: {
+      gte: from,
+      lte: to,
+    },
+  };
   const depositsTotal = Number(
     (
       await db.transaction.aggregate({
-        where: { type: "DEPOSIT" },
+        where: { ...where, type: "DEPOSIT" },
         _sum: { amount: true },
       })
     )?._sum?.amount,
@@ -20,7 +33,7 @@ const SummaryCard = async () => {
   const investimentsTotal = Number(
     (
       await db.transaction.aggregate({
-        where: { type: "INVESTMENT" },
+        where: { ...where, type: "INVESTMENT" },
         _sum: { amount: true },
       })
     )?._sum?.amount,
@@ -29,7 +42,7 @@ const SummaryCard = async () => {
   const expensesTotal = Number(
     (
       await db.transaction.aggregate({
-        where: { type: "EXPENSE" },
+        where: { ...where, type: "EXPENSE" },
         _sum: { amount: true },
       })
     )?._sum?.amount,
