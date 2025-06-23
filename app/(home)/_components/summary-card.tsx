@@ -5,14 +5,43 @@ import {
   WalletIcon,
 } from "lucide-react";
 import SummaryCards from "./summary-cards";
+import { db } from "@/app/_lib/prisma";
 
-const SummaryCard = () => {
+const SummaryCard = async () => {
+  const depositsTotal = Number(
+    (
+      await db.transaction.aggregate({
+        where: { type: "DEPOSIT" },
+        _sum: { amount: true },
+      })
+    )?._sum?.amount,
+  );
+
+  const investimentsTotal = Number(
+    (
+      await db.transaction.aggregate({
+        where: { type: "INVESTMENT" },
+        _sum: { amount: true },
+      })
+    )?._sum?.amount,
+  );
+
+  const expensesTotal = Number(
+    (
+      await db.transaction.aggregate({
+        where: { type: "EXPENSE" },
+        _sum: { amount: true },
+      })
+    )?._sum?.amount,
+  );
+
+  const totalBalance = depositsTotal - investimentsTotal - expensesTotal;
   return (
     <div className="space-y-6">
       <SummaryCards
         icon={<WalletIcon size={18} />}
         title="Saldo"
-        amount={2700}
+        amount={totalBalance}
         size="large"
       />
 
@@ -20,21 +49,21 @@ const SummaryCard = () => {
         <SummaryCards
           icon={<PiggyBankIcon size={16} className="text-blue-600" />}
           title="Investido"
-          amount={3500}
+          amount={investimentsTotal}
           size="small"
         />
 
         <SummaryCards
           icon={<TrendingUpIcon size={16} className="text-primary" />}
           title="Receita"
-          amount={8150}
+          amount={depositsTotal}
           size="small"
         />
 
         <SummaryCards
           icon={<TrendingDownIcon size={16} className="text-red-600" />}
           title="Despesas"
-          amount={2950}
+          amount={expensesTotal}
           size="small"
         />
       </div>
