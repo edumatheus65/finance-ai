@@ -1,12 +1,12 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import LogoutButton from "../_components/LogoutButton";
-import GoToTransactionButton from "../_components/go-to-transactions-button";
 import { redirect } from "next/navigation";
 import NavBar from "../_components/navbar";
 import SummaryCard from "./_components/summary-card";
 import TimeSelect from "./_components/time-select";
 import { isMatch } from "date-fns";
+import TransactionPieChart from "./_components/transactions-pie-chart";
+import { getDashboard } from "../data/get-dashboard";
 
 interface HomeProps {
   searchParams: {
@@ -28,6 +28,8 @@ const Home = async ({ searchParams: { month } }: HomeProps) => {
     redirect(`/?month=${currentMonth}`);
   }
 
+  const dashboard = await getDashboard(month);
+
   return (
     <>
       <NavBar />
@@ -36,13 +38,16 @@ const Home = async ({ searchParams: { month } }: HomeProps) => {
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <TimeSelect />
         </div>
-        <SummaryCard month={month} />
-      </div>
 
-      <div className="p-4 space-y-4 justify-between">
-        OLá, {session?.user?.name}
-        <LogoutButton />
-        <GoToTransactionButton />
+        <div className="grid grid-cols-[2fr,1fr]">
+          <div className="flex flex-col gap-6">
+            <SummaryCard month={month} {...dashboard} />
+
+            <div className="grid grid-cols-3 grid-rows-1 gap-6">
+              <TransactionPieChart {...dashboard} />
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
