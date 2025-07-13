@@ -1,12 +1,13 @@
 import { getMonthDateRange } from "@/app/_lib/date-utils";
 import { db } from "@/app/_lib/prisma";
 import { TransactionType } from "@prisma/client";
-import { TransactionPercentagePerType } from "./types";
+import { TotalExpensePerCategory, TransactionPercentagePerType } from "./types";
 
-export const getDashboard = async (month: string) => {
+export const getDashboard = async (month: string, userId: string) => {
   const { from, to } = getMonthDateRange(month);
 
   const where = {
+    userId,
     date: {
       gte: from,
       lte: to,
@@ -50,17 +51,35 @@ export const getDashboard = async (month: string) => {
     )._sum.amount,
   );
 
+  const safetDivide = (numerator: number, denominator: number) =>
+    denominator === 0 ? 0 : Math.round((numerator / denominator) * 100);
+
   const typesPercentage: TransactionPercentagePerType = {
-    [TransactionType.DEPOSIT]: Math.round(
-      (Number(depositsTotal || 0) / Number(transactionTotal)) * 100,
-    ),
-    [TransactionType.EXPENSE]: Math.round(
-      (Number(expensesTotal || 0) / Number(transactionTotal)) * 100,
-    ),
-    [TransactionType.INVESTMENT]: Math.round(
-      (Number(investimentsTotal || 0) / Number(transactionTotal)) * 100,
+    [TransactionType.DEPOSIT]: safetDivide(depositsTotal, transactionTotal),
+
+    [TransactionType.EXPENSE]: safetDivide(expensesTotal, transactionTotal),
+    [TransactionType.INVESTMENT]: safetDivide(
+      investimentsTotal,
+      transactionTotal,
     ),
   };
+
+  const totalExpensePerCategory: TotalExpensePerCategory[] = (
+    await db.transaction.groupBy({
+      by: ["category"],
+      where: {
+        ...where,
+        type: TransactionType.EXPENSE,
+      },
+      _sum: { amount: true },
+    })
+  ).map((category) => ({
+    category: category.category,
+    totalAmount: Number(category._sum.amount ?? 0),
+    percentageOfTotal: Math.round(
+      (Number(category._sum.amount) / Number(expensesTotal)) * 100,
+    ),
+  }));
 
   return {
     totalBalance,
@@ -68,5 +87,6 @@ export const getDashboard = async (month: string) => {
     investimentsTotal,
     expensesTotal,
     typesPercentage,
+    totalExpensePerCategory,
   };
 };
