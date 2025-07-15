@@ -42,7 +42,7 @@ const Home = async ({ searchParams: { month } }: HomeProps) => {
           <TimeSelect />
         </div>
 
-        <div className="grid grid-cols-[2fr,1fr]">
+        <div className="grid grid-cols-[2fr,1fr] space-x-6">
           <div className="flex flex-col gap-6">
             <SummaryCard month={month} {...dashboard} />
 

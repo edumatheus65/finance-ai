@@ -3,8 +3,8 @@ import { CardContent, CardHeader, CardTitle } from "@/app/_components/ui/card";
 import { ScrollArea } from "@/app/_components/ui/scroll-area";
 import Link from "next/link";
 import { Transaction, TransactionType } from "@prisma/client";
-import { format } from "date-fns";
 import Image from "next/image";
+import { TRANSACTION_PAYMENT_METHOD_ICONS } from "@/app/_constants/transactions";
 
 interface LastTransactionsProps {
   lastTransactions: Transaction[];
@@ -38,14 +38,23 @@ const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
           >
             {/* ICONE */}
             <div className="w-10 h-10 rounded-[10.67px] bg-muted flex items-center justify-center">
-              <Image src="/pix.png" height={20} width={20} alt="PIX" />
+              <Image
+                src={`${TRANSACTION_PAYMENT_METHOD_ICONS[transaction.paymentMethod ?? "OTHER"]}`}
+                height={20}
+                width={20}
+                alt="PIX"
+              />
             </div>
 
             {/* Nome & data */}
             <div className="flex flex-col justify-center ml-4 w-auto">
               <p className="text-sm font-bold truncate">{transaction.name}</p>
               <p className="text-xs text-muted-foreground">
-                {format(new Date(transaction.date), "dd/MM/yyyy")}
+                {new Date(transaction.date).toLocaleDateString("pt-BR", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
               </p>
             </div>
 
