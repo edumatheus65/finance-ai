@@ -5,22 +5,24 @@ import Link from "next/link";
 import { Transaction, TransactionType } from "@prisma/client";
 import Image from "next/image";
 import { TRANSACTION_PAYMENT_METHOD_ICONS } from "@/app/_constants/transactions";
+import { formatCurrency } from "@/app/_utils/currency";
 
 interface LastTransactionsProps {
   lastTransactions: Transaction[];
 }
 
 const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
-  const getPriceColor = (transaction: Transaction) => {
-    if (transaction.type === TransactionType.EXPENSE) {
-      return "text-red-600";
-    }
-    if (transaction.type === TransactionType.DEPOSIT) {
-      return "text-primary";
-    }
-    if (transaction.type === TransactionType.INVESTMENT) {
-      return "text-blue-600";
-    }
+  const getAmountColor = (type: TransactionType) => {
+    const colors = {
+      [TransactionType.DEPOSIT]: "text-primary",
+      [TransactionType.EXPENSE]: "text-red-600",
+      [TransactionType.INVESTMENT]: "text-blue-600",
+    };
+    return colors[type] || "text-muted-foreground";
+  };
+
+  const getAmountPrefix = (type: TransactionType) => {
+    return type === TransactionType.DEPOSIT ? "+" : "-";
   };
   return (
     <ScrollArea className="rounded-md border">
@@ -60,8 +62,11 @@ const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
 
             {/* Valor */}
             <div className="ml-auto">
-              <p className={`text-sm font-bold ${getPriceColor(transaction)}`}>
-                R$ {Number(transaction.amount).toFixed(2)}
+              <p
+                className={`text-sm font-bold ${getAmountColor(transaction.type)}`}
+              >
+                {getAmountPrefix(transaction.type)}
+                {formatCurrency(Number(transaction.amount))}
               </p>
             </div>
           </div>
