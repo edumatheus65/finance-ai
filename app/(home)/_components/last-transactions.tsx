@@ -1,5 +1,10 @@
 import { Button } from "@/app/_components/ui/button";
-import { CardContent, CardHeader, CardTitle } from "@/app/_components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/_components/ui/card";
 import { ScrollArea } from "@/app/_components/ui/scroll-area";
 import Link from "next/link";
 import { Transaction, TransactionType } from "@prisma/client";
@@ -24,55 +29,62 @@ const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
   const getAmountPrefix = (type: TransactionType) => {
     return type === TransactionType.DEPOSIT ? "+" : "-";
   };
+
   return (
-    <ScrollArea className="rounded-md border">
-      <CardHeader className="flex-row items-center justify-between w-full">
-        <CardTitle className="font-bold">Últimas Transações</CardTitle>
-        <Button variant="outline" className="rounded-full font-bold" asChild>
+    <Card className="flex flex-col rounded-md border">
+      {/* Header fixo */}
+      <CardHeader className="flex-row items-center justify-between w-full pb-3 border-b">
+        <CardTitle className="font-bold text-lg">Últimas Transações</CardTitle>
+        <Button
+          variant="outline"
+          className="rounded-full font-bold text-sm px-3 p-y-1.5"
+          asChild
+        >
           <Link href="/transactions">Ver mais</Link>
         </Button>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {lastTransactions.map((transaction) => (
-          <div
-            key={transaction.id}
-            className="flex items-center justify-between w-full"
-          >
-            {/* ICONE */}
-            <div className="w-10 h-10 rounded-[10.67px] bg-muted flex items-center justify-center">
-              <Image
-                src={`${TRANSACTION_PAYMENT_METHOD_ICONS[transaction.paymentMethod ?? "OTHER"]}`}
-                height={20}
-                width={20}
-                alt="PIX"
-              />
-            </div>
 
-            {/* Nome & data */}
-            <div className="flex flex-col justify-center ml-4 w-auto">
-              <p className="text-sm font-bold truncate">{transaction.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {new Date(transaction.date).toLocaleDateString("pt-BR", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </p>
-            </div>
+      {/* Lista com scroll */}
+      <ScrollArea className="flex-1 px-0">
+        <CardContent className="space-y-4 py-4">
+          {lastTransactions.map((transaction) => (
+            <div
+              key={transaction.id}
+              className="flex items-center justify-between w-full"
+            >
+              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                <Image
+                  src={`${TRANSACTION_PAYMENT_METHOD_ICONS[transaction.paymentMethod ?? "OTHER"]}`}
+                  height={16}
+                  width={16}
+                  alt={transaction.paymentMethod ?? "Método"}
+                />
+              </div>
 
-            {/* Valor */}
-            <div className="ml-auto">
-              <p
-                className={`text-sm font-bold ${getAmountColor(transaction.type)}`}
-              >
-                {getAmountPrefix(transaction.type)}
-                {formatCurrency(Number(transaction.amount))}
-              </p>
+              <div className="flex flex-col justify-center ml-4 w-auto min-w-0">
+                <p className="text-xs font-bold truncate">{transaction.name}</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {new Date(transaction.date).toLocaleDateString("pt-BR", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+
+              <div className="ml-auto">
+                <p
+                  className={`text-xs font-bold ${getAmountColor(transaction.type)}`}
+                >
+                  {getAmountPrefix(transaction.type)}
+                  {formatCurrency(Number(transaction.amount))}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
-      </CardContent>
-    </ScrollArea>
+          ))}
+        </CardContent>
+      </ScrollArea>
+    </Card>
   );
 };
 

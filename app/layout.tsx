@@ -20,9 +20,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${mulish.className} antialiased dark`}>
+      <body className={`${mulish.className} antialiased dark h-full`}>
         <AuthProviders>
-          {children}
+          <div className="flex flex-col h-full overflow-hidden">
+            {" "}
+            {children}
+          </div>
           <Toaster />
         </AuthProviders>
       </body>

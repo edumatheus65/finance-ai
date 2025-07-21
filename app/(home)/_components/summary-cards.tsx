@@ -15,27 +15,35 @@ const SummaryCards = ({
   amount,
   size = "small",
 }: SummatyCardsProps) => {
+  const isLarge = size === "large";
+
   return (
-    <Card className={`${size === "large" ? "bg-white bg-opacity-5" : ""}`}>
-      <CardHeader className="flex-row items-center gap-4">
+    <Card
+      className={`${
+        isLarge ? "bg-muted opacity-97 h-[85px] p-3" : "h-[70px] p-2"
+      }`}
+    >
+      <CardHeader className="flex-row items-center gap-2 p-0">
         {icon}
         <p
-          className={`${size === "small" ? "text-muted-foreground" : "text-white opacity-70"}`}
+          className={`${
+            isLarge
+              ? "text-white opacity-70 text-sm"
+              : "text-muted-foreground text-xs"
+          }`}
         >
           {title}
         </p>
       </CardHeader>
-      <CardContent className="flex justify-between">
-        <p
-          className={`font-bold ${size === "small" ? "text-2xl font-bold" : "text-4xl"}`}
-        >
+      <CardContent className="flex justify-between items-end p-0 mt-1">
+        <p className={`font-bold ${isLarge ? "text-xl" : "text-lg"}`}>
           {Intl.NumberFormat("pt-BR", {
             style: "currency",
             currency: "BRL",
           }).format(amount)}
         </p>
 
-        {size === "large" && <AddTransactionButton />}
+        {isLarge && <AddTransactionButton />}
       </CardContent>
     </Card>
   );

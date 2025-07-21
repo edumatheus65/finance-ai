@@ -3,13 +3,7 @@
 // import { TrendingUp } from "lucide-react";
 import { Pie, PieChart } from "recharts";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  // CardFooter,
-  CardHeader,
-} from "@/app/_components/ui/card";
+import { Card, CardContent } from "@/app/_components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
@@ -70,14 +64,12 @@ const TransactionPieChart = ({
     },
   ];
   return (
-    <Card className="flex flex-col p-12">
-      <CardHeader className="items-center pb-0">
-        <CardDescription>January - June 2024</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 pb-0">
+    <Card className="flex flex-col p-4">
+      <CardContent className="flex flex-col items-center p-0">
+        {/* Gráfico */}
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square h-[120px]"
         >
           <PieChart>
             <ChartTooltip
@@ -88,24 +80,25 @@ const TransactionPieChart = ({
               data={chartData}
               dataKey="amount"
               nameKey="type"
-              innerRadius={60}
+              innerRadius={40}
             />
           </PieChart>
         </ChartContainer>
 
-        <div className="space-y-3">
+        {/* Lista de porcentagens */}
+        <div className="mt-2 w-full space-y-2">
           <PercentageItem
-            icon={<TrendingUpIcon size={16} className="text-primary" />}
+            icon={<TrendingUpIcon size={14} className="text-primary" />}
             title="Receita"
             value={typesPercentage[TransactionType.DEPOSIT]}
           />
           <PercentageItem
-            icon={<TrendingUpIcon size={16} className="text-red-500" />}
+            icon={<TrendingUpIcon size={14} className="text-red-500" />}
             title="Despesa"
             value={typesPercentage[TransactionType.EXPENSE]}
           />
           <PercentageItem
-            icon={<PiggyBankIcon size={16} className="text-blue-500" />}
+            icon={<PiggyBankIcon size={14} className="text-blue-500" />}
             title="Investimento"
             value={typesPercentage[TransactionType.INVESTMENT]}
           />

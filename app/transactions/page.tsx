@@ -28,7 +28,11 @@ const TransactionsPage = async () => {
 
           <AddTransactionButton />
         </div>
-        <DataTable columns={transactionsColumns} data={transactions} />
+        <DataTable
+          columns={transactionsColumns}
+          data={transactions}
+          pageSize={5}
+        />
       </div>
     </>
   );

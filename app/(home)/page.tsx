@@ -31,29 +31,34 @@ const Home = async ({ searchParams: { month } }: HomeProps) => {
   }
 
   const dashboard = await getDashboard(month, session.user.id);
-  console.log("DASHBOARD", dashboard);
-  console.log("Dashboard por categoria", dashboard.totalExpensePerCategory);
+
   return (
     <>
       <NavBar />
-      <div className="p-6 space-y-6">
+      <div className="flex h-full flex-col space-y-4 overflow-hidden p-6">
+        {/* Header */}
         <div className="flex justify-between">
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <TimeSelect />
         </div>
 
-        <div className="grid grid-cols-[2fr,1fr] space-x-6">
-          <div className="flex flex-col gap-6">
+        {/* Conteúdo Principal */}
+        <div className="grid h-full grid-cols-[2fr,1fr] gap-4 overflow-hidden">
+          <div className="flex flex-col gap-4 overflow-hidden">
             <SummaryCard month={month} {...dashboard} />
 
-            <div className="grid grid-cols-3 grid-rows-1 gap-6">
+            {/* Gráficos */}
+            <div className="grid h-full grid-cols-3 grid-rows-1 gap-4 overflow-hidden">
               <TransactionPieChart {...dashboard} />
+
               <ExpensesPerCategory
                 expensesPerCategory={dashboard.totalExpensePerCategory}
               />
             </div>
           </div>
-          <div className="grid grid-cols">
+
+          {/* Coluna Direita */}
+          <div className="grid grid-cols flex-1 min-h-0">
             <LastTransactions lastTransactions={dashboard.lastTransactions} />
           </div>
         </div>
