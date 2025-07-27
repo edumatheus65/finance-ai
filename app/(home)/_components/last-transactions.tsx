@@ -11,6 +11,7 @@ import { Transaction, TransactionType } from "@prisma/client";
 import Image from "next/image";
 import { TRANSACTION_PAYMENT_METHOD_ICONS } from "@/app/_constants/transactions";
 import { formatCurrency } from "@/app/_utils/currency";
+import { Search } from "lucide-react";
 
 interface LastTransactionsProps {
   lastTransactions: Transaction[];
@@ -45,45 +46,56 @@ const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
       </CardHeader>
 
       {/* Lista com scroll */}
-      <ScrollArea className="flex-1 px-0">
-        <CardContent className="space-y-4 py-4">
-          {lastTransactions.map((transaction) => (
-            <div
-              key={transaction.id}
-              className="flex items-center justify-between w-full"
-            >
-              <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-                <Image
-                  src={`${TRANSACTION_PAYMENT_METHOD_ICONS[transaction.paymentMethod ?? "OTHER"]}`}
-                  height={16}
-                  width={16}
-                  alt={transaction.paymentMethod ?? "Método"}
-                />
-              </div>
+      {lastTransactions.length === 0 ? (
+        <div className="flex flex-1 items-center justify-center min-h-[150px] space-x-2">
+          <Search className="w-8 h-8" />
+          <p className="text-sm text-muted-foreground">
+            Nehuma transação registrada
+          </p>
+        </div>
+      ) : (
+        <ScrollArea className="flex-1 px-0">
+          <CardContent className="space-y-4 py-4">
+            {lastTransactions.map((transaction) => (
+              <div
+                key={transaction.id}
+                className="flex items-center justify-between w-full"
+              >
+                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+                  <Image
+                    src={`${TRANSACTION_PAYMENT_METHOD_ICONS[transaction.paymentMethod ?? "OTHER"]}`}
+                    height={16}
+                    width={16}
+                    alt={transaction.paymentMethod ?? "Método"}
+                  />
+                </div>
 
-              <div className="flex flex-col justify-center ml-4 w-auto min-w-0">
-                <p className="text-xs font-bold truncate">{transaction.name}</p>
-                <p className="text-[10px] text-muted-foreground">
-                  {new Date(transaction.date).toLocaleDateString("pt-BR", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </p>
-              </div>
+                <div className="flex flex-col justify-center ml-4 w-auto min-w-0">
+                  <p className="text-xs font-bold truncate">
+                    {transaction.name}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {new Date(transaction.date).toLocaleDateString("pt-BR", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </p>
+                </div>
 
-              <div className="ml-auto">
-                <p
-                  className={`text-xs font-bold ${getAmountColor(transaction.type)}`}
-                >
-                  {getAmountPrefix(transaction.type)}
-                  {formatCurrency(Number(transaction.amount))}
-                </p>
+                <div className="ml-auto">
+                  <p
+                    className={`text-xs font-bold ${getAmountColor(transaction.type)}`}
+                  >
+                    {getAmountPrefix(transaction.type)}
+                    {formatCurrency(Number(transaction.amount))}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
-        </CardContent>
-      </ScrollArea>
+            ))}
+          </CardContent>
+        </ScrollArea>
+      )}
     </Card>
   );
 };
