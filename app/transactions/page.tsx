@@ -15,7 +15,16 @@ const TransactionsPage = async () => {
   }
 
   const transactions = JSON.parse(
-    JSON.stringify(await db.transaction.findMany({})),
+    JSON.stringify(
+      await db.transaction.findMany({
+        where: {
+          userId: session.user.id,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+    ),
   );
 
   return (
