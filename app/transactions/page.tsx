@@ -40,6 +40,7 @@ const TransactionsPage = async () => {
         <DataTable
           columns={transactionsColumns}
           data={transactions}
+          className="text-sm [&_td]:py-1 [&_td]:px-2 [&_th]:py-2 [&_th]:px-2"
           pageSize={5}
         />
       </div>

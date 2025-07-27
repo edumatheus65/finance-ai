@@ -17,17 +17,20 @@ import {
   TableRow,
 } from "./table";
 import { Button } from "./button";
+import { cn } from "@/app/_lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageSize?: number;
+  className: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   pageSize = 10,
+  className,
 }: DataTableProps<TData, TValue>) {
   const [pageIndex, setPageIndex] = useState(0);
 
@@ -54,7 +57,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
+      <div className={cn("rounded-md border", className)}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
