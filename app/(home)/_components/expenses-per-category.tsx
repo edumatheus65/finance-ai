@@ -13,10 +13,8 @@ const ExpensesPerCategory = ({
   return (
     <ScrollArea className="col-span-2 rounded-md border p-4 h-full">
       <div className="space-y-3">
-        {/* Título alinhado */}
         <p className="font-bold text-base">Gastos por Categoria</p>
 
-        {/* Conteúdo */}
         {expensesPerCategory.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             Nenhuma despesa cadastrada esse mês
