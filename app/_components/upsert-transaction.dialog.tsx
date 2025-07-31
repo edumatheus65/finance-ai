@@ -150,13 +150,18 @@ const UpsertTransactionDialog = ({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-2 text-sm"
+          >
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Título da Transação</FormLabel>
+                  <FormLabel className="text-sm font-medium">
+                    Título da Transação
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="Digite o nome" {...field} />
                   </FormControl>
@@ -170,7 +175,7 @@ const UpsertTransactionDialog = ({
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Valor</FormLabel>
+                  <FormLabel className="text-sm font-medium">Valor</FormLabel>
                   <FormControl>
                     <MoneyInput
                       placeholder="Digite o valor"
@@ -193,7 +198,9 @@ const UpsertTransactionDialog = ({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tipo da Transação</FormLabel>
+                  <FormLabel className="text-sm font-medium">
+                    Tipo da Transação
+                  </FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -221,7 +228,9 @@ const UpsertTransactionDialog = ({
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Categoria</FormLabel>
+                  <FormLabel className="text-sm font-medium">
+                    Categoria
+                  </FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -249,7 +258,9 @@ const UpsertTransactionDialog = ({
               name="paymentMethod"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Método de Pagamento</FormLabel>
+                  <FormLabel className="text-sm font-medium">
+                    Método de Pagamento
+                  </FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -277,7 +288,7 @@ const UpsertTransactionDialog = ({
               name="date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Data</FormLabel>
+                  <FormLabel className="text-sm font-medium">Data</FormLabel>
                   <DatePicker value={field.value} onChange={field.onChange} />
                   <FormMessage />
                 </FormItem>
