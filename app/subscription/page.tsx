@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader } from "../_components/ui/card";
 import { CheckIcon, XIcon } from "lucide-react";
 import { Button } from "../_components/ui/button";
+import AcquirePlanButton from "./_components/acquire-plan-button";
 
 const SubscriptionsPage = async () => {
   const session = await getServerSession(authOptions);
@@ -65,7 +66,7 @@ const SubscriptionsPage = async () => {
                 <CheckIcon className="text-primary" />
                 Relatório de IA ilimitado
               </div>
-              <Button className="w-full rounded-full">Adquirir Plano</Button>
+              <AcquirePlanButton />
             </CardContent>
           </Card>
         </div>
