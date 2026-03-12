@@ -18,10 +18,7 @@ interface HomeProps {
 
 const Home = async ({ searchParams: { month } }: HomeProps) => {
   const session = await getServerSession(authOptions);
-
-  if (!session || !session.user.id) {
-    redirect("/login");
-  }
+  const userId = session!.user.id;
 
   const monthIsInvalid = !month || !isMatch(month, "MM");
 
@@ -30,7 +27,7 @@ const Home = async ({ searchParams: { month } }: HomeProps) => {
     redirect(`/?month=${currentMonth}`);
   }
 
-  const dashboard = await getDashboard(month, session.user.id);
+  const dashboard = await getDashboard(month, userId);
 
   return (
     <>

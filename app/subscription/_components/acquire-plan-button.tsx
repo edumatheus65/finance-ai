@@ -3,8 +3,12 @@
 import { Button } from "@/app/_components/ui/button";
 import { createStripeCheckout } from "../_actions/create-checkout";
 import { loadStripe } from "@stripe/stripe-js";
+import { useSession } from "next-auth/react";
+import { createStripePortalSession } from "../_actions/create-portal-session";
 
 const AcquirePlanButton = () => {
+  const { data: session } = useSession();
+
   const handleAcquirePlanClick = async () => {
     const { sessionId } = await createStripeCheckout();
 
@@ -20,8 +24,31 @@ const AcquirePlanButton = () => {
     }
     await stripe.redirectToCheckout({ sessionId });
   };
+
+  const handleManegerPlan = async () => {
+    const response = await createStripePortalSession();
+    window.location.href = response.url;
+  };
+
+  const hasPremium = session?.user?.subscriptionStatus === "active";
+
+  if (hasPremium) {
+    return (
+      <Button
+        className="w-full rounded-full"
+        variant="outline"
+        onClick={handleManegerPlan}
+      >
+        Gerenciar Plano
+      </Button>
+    );
+  }
   return (
-    <Button className="w-full rounded-full" onClick={handleAcquirePlanClick}>
+    <Button
+      className="w-full rounded-full"
+      onClick={handleAcquirePlanClick}
+      variant="default"
+    >
       Adquirir Plano
     </Button>
   );

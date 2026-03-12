@@ -46,7 +46,10 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  transactions Transaction[]
+  transactions         Transaction[]
+  stripeCustomerId     String?       @unique
+  stripeSubscriptionId String?
+  subscriptionStatus   String?
 
   @@map("users")
 }

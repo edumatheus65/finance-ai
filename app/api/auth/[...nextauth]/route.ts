@@ -21,6 +21,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, user }: { session: Session; user: User }) {
       session.user.id = user.id;
+      session.user.subscriptionStatus = user.subscriptionStatus;
       return session;
     },
   },

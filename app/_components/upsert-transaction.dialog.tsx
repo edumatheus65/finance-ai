@@ -44,7 +44,10 @@ import {
 import { upsertTransaction } from "../_actions/add-transaction";
 import { parseISO } from "date-fns";
 import { useEffect } from "react";
-import { showErrorToast, showSuccessToast } from "../_lib/toast";
+import {
+  showTransactionErrorToast,
+  showTransactionSuccessToast,
+} from "../_lib/toast";
 
 const formSchema = z.object({
   name: z.string().trim().min(1, {
@@ -115,18 +118,18 @@ const UpsertTransactionDialog = ({
   }, [defaultValues, form]);
 
   const onSubmit = async (data: FormSchema) => {
-    try {
-      await upsertTransaction({ ...data, id: transactionId });
-      setIsOpen(false);
-      form.reset();
+    const result = await upsertTransaction({ ...data, id: transactionId });
+    const transactionAction = isUpdate ? "update" : "create";
 
-      showSuccessToast(transactionId);
-    } catch (error) {
-      console.error(error);
-      showErrorToast(
-        `Ocorreu um erro ao ${isUpdate ? "atualizar" : "criar"} a transação.`,
-      );
+    if (!result.success) {
+      showTransactionErrorToast(transactionAction, result.error);
+      return;
     }
+
+    setIsOpen(false);
+    form.reset();
+
+    showTransactionSuccessToast(transactionAction);
   };
 
   const isUpdate = Boolean(transactionId);

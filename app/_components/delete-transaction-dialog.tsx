@@ -1,3 +1,5 @@
+"use client";
+
 import { deleteTransaction } from "../_actions/delete-transaction";
 import {
   Dialog,
@@ -8,6 +10,10 @@ import {
   DialogHeader,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
+import {
+  showTransactionErrorToast,
+  showTransactionSuccessToast,
+} from "../_lib/toast";
 
 interface DeleteTransactionDialogProps {
   isOpen: boolean;
@@ -22,10 +28,22 @@ const DeleteTranactionDialog = ({
 }: DeleteTransactionDialogProps) => {
   const handleDelete = async () => {
     try {
-      await deleteTransaction(transactionId);
+      const result = await deleteTransaction(transactionId);
+
+      if (!result.success) {
+        showTransactionErrorToast("delete", result.error);
+        return;
+      }
+
       setIsOpen(false);
+      showTransactionSuccessToast("delete");
     } catch (error) {
-      console.error("Erro ao deletar transação", error);
+      showTransactionErrorToast(
+        "delete",
+        error instanceof Error
+          ? error.message
+          : "Erro inesperado ao deletar transação",
+      );
     }
   };
   return (

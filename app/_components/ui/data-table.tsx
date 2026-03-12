@@ -73,7 +73,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <>
-      <div className="flex justify-between-items-center flex-wrap gap-4">
+      <div className="flex justify-between-items-center justify-center flex-wrap gap-4">
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Items per page:</span>
 
