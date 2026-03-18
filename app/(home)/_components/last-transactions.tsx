@@ -7,14 +7,15 @@ import {
 } from "@/app/_components/ui/card";
 import { ScrollArea } from "@/app/_components/ui/scroll-area";
 import Link from "next/link";
-import { Transaction, TransactionType } from "@prisma/client";
+import { TransactionType } from "@prisma/client";
+import { SerializedTransaction } from "@/app/data/get-dashboard/types";
 import Image from "next/image";
 import { TRANSACTION_PAYMENT_METHOD_ICONS } from "@/app/_constants/transactions";
 import { formatCurrency } from "@/app/_utils/currency";
 import { Search } from "lucide-react";
 
 interface LastTransactionsProps {
-  lastTransactions: Transaction[];
+  lastTransactions: SerializedTransaction[];
 }
 
 const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
@@ -88,7 +89,7 @@ const LastTransactions = ({ lastTransactions }: LastTransactionsProps) => {
                     className={`text-xs font-bold ${getAmountColor(transaction.type)}`}
                   >
                     {getAmountPrefix(transaction.type)}
-                    {formatCurrency(Number(transaction.amount))}
+                    {formatCurrency(transaction.amount)}
                   </p>
                 </div>
               </div>
