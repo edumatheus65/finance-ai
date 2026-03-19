@@ -45,3 +45,13 @@ prisma/*.db-journal
 
 # dist
 dist/
+
+# archives and binaries
+*.tar.gz
+*.zip
+*.rar
+*.7z
+bin/
+
+# lock files (pnpm is the standard package manager)
+package-lock.json
