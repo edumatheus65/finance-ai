@@ -30,14 +30,12 @@ import { ScrollArea } from "./scroll-area";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  // pageSize?: number;
   className?: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  // pageSize = 10,
   className,
 }: DataTableProps<TData, TValue>) {
   const [pageIndex, setPageIndex] = useState(0);

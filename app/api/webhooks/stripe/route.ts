@@ -46,10 +46,6 @@ export const POST = async (request: Request) => {
               : session.subscription?.id;
 
           if (!userId || !subscriptionId) {
-            console.warn(
-              "⚠️ Missing customer or subscription in session:",
-              session,
-            );
             break;
           }
 
@@ -60,10 +56,6 @@ export const POST = async (request: Request) => {
               subscriptionStatus: "active",
             },
           });
-
-          console.log(
-            `✅ Subscription ${subscriptionId} activated for user ${userId}`,
-          );
         }
         break;
 
@@ -76,7 +68,6 @@ export const POST = async (request: Request) => {
             : invoice.subscription?.id;
 
         if (!subscriptionId) {
-          console.warn("⚠️ Missing subscription in invoice:", invoice);
           break;
         }
 
@@ -89,10 +80,6 @@ export const POST = async (request: Request) => {
             : invoice.customer?.id;
 
         if (!userId || !customerId) {
-          console.warn(
-            "⚠️ Missing customer or subscription in invoice:",
-            subscription,
-          );
           break;
         }
 
@@ -105,9 +92,6 @@ export const POST = async (request: Request) => {
           },
         });
 
-        console.log(
-          `✅ Subscription ${subscriptionId} activated for user ${userId}`,
-        );
         break;
       }
 
@@ -121,7 +105,6 @@ export const POST = async (request: Request) => {
             : subscription.customer?.id;
         const status = subscription.status;
 
-        // If no userId in metadata, find it by stripeCustomerId
         if (!userId && customerId) {
           const user = await prisma.user.findUnique({
             where: { stripeCustomerId: customerId },
@@ -130,7 +113,6 @@ export const POST = async (request: Request) => {
         }
 
         if (!userId) {
-          console.warn("Missing userId in subscription update:", subscription);
           break;
         }
 
@@ -140,9 +122,6 @@ export const POST = async (request: Request) => {
             subscriptionStatus: status,
           },
         });
-        console.log(
-          `Subscription ${subscription.id} status updated to ${status} for user ${userId}`,
-        );
         break;
       }
 
@@ -168,13 +147,8 @@ export const POST = async (request: Request) => {
           },
         });
 
-        console.log(
-          `Payment failed for subscription ${subscriptionId} (user ${userId})`,
-        );
         break;
       }
-      default:
-        console.log(`Unhandled event:`);
     }
   } catch (error) {
     console.error("Error processing stripe event:", error);
