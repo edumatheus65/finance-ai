@@ -1,0 +1,45 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build output
+.next
+out
+dist
+
+# Version control
+.git
+.gitignore
+
+# IDE / Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# Environment (secrets must be injected at runtime)
+.env
+.env.local
+.env.*.local
+
+# Testing
+coverage
+*.test.*
+*.spec.*
+__tests__
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker (avoid recursive context)
+Dockerfile
+docker-compose*.yml
+
+# Husky / Git hooks
+.husky
