@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Finance AI
 
-## Getting Started
+Aplicação web de gestão financeira pessoal construída com **Next.js 14**, **Prisma**, **PostgreSQL** e integração com **Stripe** para planos premium. Autenticação via **NextAuth** com Google OAuth.
 
-First, run the development server:
+## Stack
+
+| Camada        | Tecnologia                          |
+| ------------- | ----------------------------------- |
+| Framework     | Next.js 14 (App Router)             |
+| Linguagem     | TypeScript                          |
+| Banco de dados| PostgreSQL + Prisma ORM              |
+| Autenticação  | NextAuth.js (Google OAuth)           |
+| Pagamentos    | Stripe (Checkout, Webhooks, Portal)  |
+| UI            | Tailwind CSS, Radix UI, Framer Motion|
+| Testes        | Vitest + Happy DOM                   |
+| CI            | GitHub Actions                       |
+
+## Pré-requisitos
+
+- [Node.js](https://nodejs.org/) 20+
+- [pnpm](https://pnpm.io/) (gerenciador de pacotes padrão do projeto)
+- [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/) (para rodar via container)
+- Conta Google Cloud (para credenciais OAuth)
+- Conta Stripe (para funcionalidades de pagamento)
+
+## Como Rodar
+
+### Variáveis de ambiente
+
+Copie o arquivo de exemplo e preencha com suas credenciais:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Veja `.env.example` para a lista completa de variáveis necessárias.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Método 1 — Desenvolvimento local
 
-## Learn More
+```bash
+# 1. Instale as dependências
+pnpm install
 
-To learn more about Next.js, take a look at the following resources:
+# 2. Gere o Prisma Client
+pnpm prisma generate
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# 3. Rode as migrações (requer um PostgreSQL acessível via DATABASE_URL)
+pnpm prisma migrate dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# 4. Inicie o servidor de desenvolvimento
+pnpm dev
+```
 
-## Deploy on Vercel
+A aplicação estará disponível em [http://localhost:3000](http://localhost:3000).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Comandos úteis
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm build        # Build de produção
+pnpm start        # Servidor de produção (requer build prévio)
+pnpm lint         # Linting com ESLint
+pnpm test         # Testes com Vitest
+```
+
+---
+
+### Método 2 — Docker
+
+Sobe a aplicação e o banco PostgreSQL com um único comando:
+
+```bash
+# Build e inicialização
+docker compose up --build
+
+# Ou em background
+docker compose up --build -d
+```
+
+O `docker-compose.yml` configura:
+
+- **`db`** — PostgreSQL 16 Alpine com healthcheck e volume persistente
+- **`app`** — Aplicação Next.js (multi-stage build, imagem otimizada)
+
+O container da aplicação aguarda automaticamente o banco estar pronto e executa `prisma migrate deploy` antes de iniciar.
+
+Para parar e remover:
+
+```bash
+docker compose down          # Mantém dados do banco
+docker compose down -v       # Remove dados do banco também
+```
+
+## Estrutura do Projeto
+
+```
+├── app/                     # App Router (páginas, layouts, API routes)
+├── prisma/
+│   ├── schema.prisma        # Schema do banco de dados
+│   └── migrations/          # Histórico de migrações
+├── public/                  # Assets estáticos
+├── .github/workflows/       # CI/CD (GitHub Actions)
+├── Dockerfile               # Multi-stage build para produção
+├── docker-compose.yml       # Orquestração (app + PostgreSQL)
+├── docker-entrypoint.sh     # Entrypoint com wait-for-db + migrations
+└── .env.example             # Template de variáveis de ambiente
+```
+
+## CI/CD
+
+O workflow de CI (`.github/workflows/ci.yml`) é executado automaticamente em todo **push** e **pull request** para a branch `main`. Ele roda:
+
+1. **Install** — `pnpm install --frozen-lockfile`
+2. **Generate** — `pnpm prisma generate`
+3. **Lint** — `pnpm lint`
+4. **Test** — `pnpm test`
+5. **Build** — `pnpm build`
+
+## Licença
+
+Projeto privado.
