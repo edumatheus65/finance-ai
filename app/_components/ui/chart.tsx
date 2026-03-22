@@ -5,6 +5,16 @@ import * as RechartsPrimitive from "recharts";
 
 import { cn } from "@/app/_lib/utils";
 
+interface ChartPayloadItem {
+  name?: string;
+  value?: number | string;
+  dataKey?: string;
+  color?: string;
+  fill?: string;
+  payload?: Record<string, string>;
+  [key: string]: unknown;
+}
+
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
 
@@ -106,22 +116,19 @@ const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
     active?: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    payload?: Record<string, any>[];
+    payload?: ChartPayloadItem[];
     label?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     labelFormatter?: (
-      label: any,
-      payload: Record<string, any>[],
+      label: unknown,
+      payload: ChartPayloadItem[],
     ) => React.ReactNode;
     labelClassName?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     formatter?: (
-      value: any,
+      value: unknown,
       name: string,
-      item: Record<string, any>,
+      item: ChartPayloadItem,
       index: number,
-      payload: Record<string, any>[],
+      payload: ChartPayloadItem[],
     ) => React.ReactNode;
     hideLabel?: boolean;
     hideIndicator?: boolean;
@@ -205,7 +212,7 @@ const ChartTooltipContent = React.forwardRef<
           {payload.map((item, index) => {
             const key = `${nameKey || item.name || item.dataKey || "value"}`;
             const itemConfig = getPayloadConfigFromPayload(config, item, key);
-            const indicatorColor = color || item.payload.fill || item.color;
+            const indicatorColor = color || item.payload?.fill || item.color;
 
             return (
               <div
@@ -216,7 +223,7 @@ const ChartTooltipContent = React.forwardRef<
                 )}
               >
                 {formatter && item?.value !== undefined && item.name ? (
-                  formatter(item.value, item.name, item, index, item.payload)
+                  formatter(item.value, item.name, item, index, payload)
                 ) : (
                   <>
                     {itemConfig?.icon ? (
@@ -278,8 +285,7 @@ const ChartLegend = RechartsPrimitive.Legend;
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    payload?: Record<string, any>[];
+    payload?: ChartPayloadItem[];
     verticalAlign?: "top" | "bottom" | "middle";
     hideIcon?: boolean;
     nameKey?: string;
