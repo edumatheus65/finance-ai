@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import NavBar from "../_components/navbar";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/_lib/auth";
 import { Card, CardContent, CardHeader } from "../_components/ui/card";
 import { CheckIcon, XIcon } from "lucide-react";
 import { Button } from "../_components/ui/button";

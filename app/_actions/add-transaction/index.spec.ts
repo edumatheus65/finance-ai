@@ -42,7 +42,7 @@ vi.mock("./plan-limit", () => ({
   validateFreePlanTransactionLimit: validateFreePlanTransactionLimitMock,
 }));
 
-vi.mock("@/app/api/auth/[...nextauth]/route", () => ({
+vi.mock("@/app/_lib/auth", () => ({
   authOptions: authOptionsMock,
 }));
 

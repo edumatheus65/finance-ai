@@ -3,7 +3,7 @@ import { db } from "../_lib/prisma";
 import { transactionsColumns } from "./_collumns";
 import AddTransactionButton from "../_components/add-transaction-button";
 import NavBar from "../_components/navbar";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/_lib/auth";
 import { getServerSession } from "next-auth";
 
 const TransactionsPage = async () => {

@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
@@ -11,7 +12,7 @@ const ERROR_MESSAGES: Record<string, string> = {
     "Este e-mail já está em uso por outro método de login. Tente entrar com o método que você usou originalmente.",
 };
 
-const LoginPage = () => {
+const LoginContent = () => {
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
   const errorMessage = errorParam ? ERROR_MESSAGES[errorParam] : null;
@@ -22,7 +23,6 @@ const LoginPage = () => {
 
   return (
     <div className="grid h-full grid-cols-2">
-      {/* Esquerda */}
       <div className="mx-auto flex h-full max-w-[550px] flex-col justify-center p-8">
         <Image
           src="/logo.svg"
@@ -50,7 +50,6 @@ const LoginPage = () => {
           Fazer Login ou Criar Conta
         </Button>
       </div>
-      {/* Direira */}
       <div className="relative h-full w-full">
         <Image
           src="/login.png"
@@ -60,6 +59,14 @@ const LoginPage = () => {
         />
       </div>
     </div>
+  );
+};
+
+const LoginPage = () => {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
   );
 };
 

@@ -1,6 +1,6 @@
 "use server";
 
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/_lib/auth";
 import { getServerSession } from "next-auth";
 import Stripe from "stripe";
 
@@ -16,7 +16,7 @@ export const createStripeCheckout = async () => {
   }
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2024-10-28.acacia",
+    apiVersion: "2025-02-24.acacia",
   });
 
   const session = await stripe.checkout.sessions.create({

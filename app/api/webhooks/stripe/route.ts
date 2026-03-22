@@ -18,7 +18,7 @@ export const POST = async (request: Request) => {
 
   const text = await request.text();
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2024-10-28.acacia",
+    apiVersion: "2025-02-24.acacia",
   });
 
   let event: Stripe.Event;
@@ -98,7 +98,7 @@ export const POST = async (request: Request) => {
       case "customer.subscription.updated":
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
-        let userId = subscription.metadata?.userId;
+        let userId: string | undefined = subscription.metadata?.userId;
         const customerId =
           typeof subscription.customer === "string"
             ? subscription.customer

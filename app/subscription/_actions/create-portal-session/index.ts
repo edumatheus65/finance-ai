@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/app/_lib/prisma";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/_lib/auth";
 import { getServerSession } from "next-auth";
 import Stripe from "stripe";
 
@@ -15,7 +15,7 @@ export const createStripePortalSession = async () => {
   if (!user?.stripeCustomerId) throw Error("Stripe Customer not found");
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2024-10-28.acacia",
+    apiVersion: "2025-02-24.acacia",
   });
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: user.stripeCustomerId,

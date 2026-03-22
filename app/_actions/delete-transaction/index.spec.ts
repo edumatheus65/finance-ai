@@ -28,7 +28,7 @@ vi.mock("next/cache", () => ({
   revalidatePath: revalidatePathMock,
 }));
 
-vi.mock("@/app/api/auth/[...nextauth]/route", () => ({
+vi.mock("@/app/_lib/auth", () => ({
   authOptions: authOptionsMock,
 }));
 
