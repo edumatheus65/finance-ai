@@ -19,7 +19,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 RUN pnpm prisma generate
-RUN pnpm build
+RUN pnpm next build
 
 # ── Stage 3: Production runner ──────────────────────────────────────
 FROM node:20-slim AS runner

@@ -4,11 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "NODE_OPTIONS='--disable-warning=DEP0040' next dev",
-    "build": "next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:prod": "prisma migrate deploy",
+    "prisma:studio": "prisma studio"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",
