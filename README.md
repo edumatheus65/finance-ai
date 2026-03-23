@@ -1,5 +1,8 @@
 # Finance AI
 
+<img width="1365" height="616" alt="image" src="https://github.com/user-attachments/assets/33e591f2-01e5-424c-a68f-88e2af8c2582" />
+
+
 Aplicação web de gestão financeira pessoal construída com **Next.js 14**, **Prisma**, **PostgreSQL** e integração com **Stripe** para planos premium. Autenticação via **NextAuth** com Google OAuth.
 
 ## Stack
