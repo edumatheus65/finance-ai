@@ -15,7 +15,7 @@ export type ParseFinancialInsightResult =
   | { success: true; insight: FinancialInsight }
   | { success: false; error: string };
 
-function stripMarkdownCodeFence(text: string): string {
+function stripMarkdownFence(text: string): string {
   const t = text.trim();
   const block = /^```(?:json)?\s*\r?\n?([\s\S]*?)\r?\n?```$/im.exec(t);
   if (block) {
@@ -24,14 +24,11 @@ function stripMarkdownCodeFence(text: string): string {
   return t;
 }
 
-/**
- * Extrai o primeiro objeto JSON `{...}` do texto (útil se o modelo adicionar texto extra).
- */
 function extractFirstJsonObject(text: string): string {
-  const t = stripMarkdownCodeFence(text);
+  const t = stripMarkdownFence(text);
   const start = t.indexOf("{");
   if (start === -1) {
-    throw new Error("Nenhum '{' encontrado na resposta.");
+    throw new Error("No '{' found in model response.");
   }
   let depth = 0;
   let inString = false;
@@ -64,12 +61,9 @@ function extractFirstJsonObject(text: string): string {
       }
     }
   }
-  throw new Error("JSON incompleto ou chaves desbalanceadas.");
+  throw new Error("Incomplete JSON or unbalanced braces.");
 }
 
-/**
- * Interpreta a saída textual do modelo (Groq em modo json_object não segue schema Zod).
- */
 export function parseFinancialInsightFromModelText(
   text: string,
 ): ParseFinancialInsightResult {
@@ -80,14 +74,14 @@ export function parseFinancialInsightFromModelText(
     if (!parsed.success) {
       return {
         success: false,
-        error: `JSON inválido para o schema: ${parsed.error.message}`,
+        error: `Invalid JSON for schema: ${parsed.error.message}`,
       };
     }
     return { success: true, insight: parsed.data };
   } catch (e) {
     return {
       success: false,
-      error: e instanceof Error ? e.message : "Falha ao interpretar JSON.",
+      error: e instanceof Error ? e.message : "Failed to parse JSON.",
     };
   }
 }

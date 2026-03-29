@@ -26,15 +26,18 @@ const AIReportButton = () => {
   const [report, setReport] = useState<GenerateAIReportSuccess["data"] | null>(
     null,
   );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleGenerate = () => {
     startTransition(async () => {
+      setErrorMessage(null);
       const result = await generateAIReport();
       if (result.success) {
         setReport(result.data);
         toast.success("Relatório gerado com base no mês anterior.");
       } else {
         setReport(null);
+        setErrorMessage(result.error);
         showErrorToast(result.error);
       }
     });
@@ -45,6 +48,7 @@ const AIReportButton = () => {
       onOpenChange={(open) => {
         if (!open) {
           setReport(null);
+          setErrorMessage(null);
         }
       }}
     >
@@ -64,6 +68,15 @@ const AIReportButton = () => {
           </DialogDescription>
         </DialogHeader>
 
+        {errorMessage ? (
+          <div
+            role="alert"
+            className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          >
+            {errorMessage}
+          </div>
+        ) : null}
+
         {report ? (
           <div className="space-y-4 text-sm">
             <div className="rounded-md border bg-muted/40 px-3 py-2">
@@ -75,19 +88,19 @@ const AIReportButton = () => {
               <div className="rounded-md border p-2">
                 <p className="text-muted-foreground">Entradas</p>
                 <p className="font-semibold text-emerald-600 dark:text-emerald-400">
-                  {formatCurrency(report.totals.entradas)}
+                  {formatCurrency(report.totals.income)}
                 </p>
               </div>
               <div className="rounded-md border p-2">
                 <p className="text-muted-foreground">Saídas</p>
                 <p className="font-semibold text-red-600 dark:text-red-400">
-                  {formatCurrency(report.totals.saidas)}
+                  {formatCurrency(report.totals.expenses)}
                 </p>
               </div>
               <div className="rounded-md border p-2">
                 <p className="text-muted-foreground">Saldo</p>
                 <p className="font-semibold">
-                  {formatCurrency(report.totals.saldo)}
+                  {formatCurrency(report.totals.balance)}
                 </p>
               </div>
             </div>

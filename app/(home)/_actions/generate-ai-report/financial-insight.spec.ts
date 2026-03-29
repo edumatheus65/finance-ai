@@ -11,7 +11,7 @@ describe("parseFinancialInsightFromModelText", () => {
   "focusArea": "Alimentação"
 }`;
 
-  it("aceita JSON puro", () => {
+  it("accepts raw JSON", () => {
     const r = parseFinancialInsightFromModelText(valid);
     expect(r.success).toBe(true);
     if (r.success) {
@@ -20,12 +20,12 @@ describe("parseFinancialInsightFromModelText", () => {
     }
   });
 
-  it("aceita JSON dentro de fence markdown", () => {
+  it("accepts JSON inside a markdown fence", () => {
     const r = parseFinancialInsightFromModelText("```json\n" + valid + "\n```");
     expect(r.success).toBe(true);
   });
 
-  it("rejeita formato errado (ex.: só chave insight, como Llama json_object)", () => {
+  it("rejects wrong shape (e.g. only insight key, as in some Llama outputs)", () => {
     const r = parseFinancialInsightFromModelText(
       JSON.stringify({
         insight:
@@ -38,7 +38,7 @@ describe("parseFinancialInsightFromModelText", () => {
     }
   });
 
-  it("rejeita sentiment inválido", () => {
+  it("rejects invalid sentiment", () => {
     const r = parseFinancialInsightFromModelText(
       '{"headline":"a","summary":"b","actionableTip":"c","sentiment":"ok","healthScore":5}',
     );
