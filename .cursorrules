@@ -1,0 +1,94 @@
+# finance-ai — project conventions (preserve consistency)
+
+## Language
+
+- **Code**: identifiers, comments, commit messages, types, and internal documentation in **English**.
+- **User-facing text**: UI copy, toasts, validation messages shown to users, and AI-generated user content in **Portuguese (pt-BR)**.
+- **LLM prompts / structured outputs**: User-visible strings in pt-BR; JSON keys and schema field names for programmatic use stay **English** (e.g. `headline`, `summary`, `FinancialInsight`).
+- **Zod**: `errorMap` / message strings exposed to the client in pt-BR; schema names and code in English.
+
+## Stack (do not casually swap major versions)
+
+- **Framework**: Next.js **14.2.x** (App Router), React **18**, TypeScript **5** (strict).
+- **Database**: Prisma **5.21.x**, PostgreSQL; use `DATABASE_URL` + `DIRECT_URL` as in schema.
+- **Auth**: NextAuth **4.x** with Prisma adapter; session in Server Actions via `getServerSession(authOptions)`.
+- **UI**: Tailwind **3.4.x**, **shadcn/ui** (style: default, base: neutral, `cssVariables: true`, RSC), Radix primitives, `class-variance-authority`, `clsx` + `tailwind-merge` via `cn()` from `@/app/_lib/utils`.
+- **Forms / validation**: `react-hook-form`, `zod`.
+- **AI**: Vercel AI SDK `ai` **v6**; providers `@ai-sdk/openai` and `@ai-sdk/groq`. Keys **server-only** (`OPENAI_API_KEY`, `GROQ_API_KEY`) — **never** `NEXT_PUBLIC_` for secrets.
+- **Payments**: Stripe (server SDK + publishable key for client where needed).
+- **Charts / tables**: Recharts, TanStack Table; icons Lucide; toasts Sonner.
+- **Tests**: Vitest; colocate `*.spec.ts` next to the module under test.
+
+Aliases: `@/*` → project root (`components.json` maps `components` → `@/app/_components`, `ui` → `@/app/_components/ui`, `lib` → `@/app/_lib`).
+
+## Folder structure
+
+- **`app/`**: App Router. Route groups like `(home)` when useful; URL-facing segments: `login`, `transactions`, `subscription`, etc.
+- **`app/_actions/<action-name>/`**: Shared server actions; entry is typically **`index.ts`** with `"use server"` at the top. Split helpers into sibling files only when the action is non-trivial (e.g. `plan-limit.ts`).
+- **`app/<route>/_actions/<action-name>/`**: Route-scoped server actions (same `index.ts` + helpers pattern when needed).
+- **`app/data/<feature>/`**: Server-only data loaders (e.g. `get-dashboard/index.ts`); co-locate **`types.ts`** for returned shapes.
+- **`app/_components/`**: Shared components; **`app/_components/ui/`** = shadcn primitives (do not treat as generic “dump”; extend via `cn` + variants).
+- **`app/<route>/_components/`**: Page-specific components.
+- **`app/_constants/`**: App constants and **pt-BR label maps** for Prisma enums (e.g. `transactions.ts`).
+- **`app/_lib/`**: `prisma`, `auth`, `utils` (`cn`), `toast`, `date-utils`, etc.
+- **`app/_utils/`**: Small pure helpers (e.g. `currency.ts`).
+- **`app/_providers/`**: Client providers (e.g. auth wrapper).
+- **`app/types/`**: Ambient / module augmentation (e.g. NextAuth).
+- **`app/api/`**: Route handlers only when needed (auth, webhooks); prefer Server Actions for mutations/queries that fit the app model.
+- **`prisma/`**: `schema.prisma` — source of truth for enums and models.
+- **`middleware.ts`**: Auth protection via `withAuth`; keep `matcher` aligned with protected routes.
+
+There is no `hooks/` package yet (`components.json` references `@/hooks`); add hooks under e.g. `app/_hooks/` or `hooks/` and keep imports consistent with `tsconfig` paths.
+
+## Naming
+
+- **Files**: Prefer **kebab-case** for components and modules (`ai-report-button.tsx`, `delete-transaction-dialog.tsx`). Dialogs may use a **`.dialog.tsx`** suffix. Avoid new **PascalCase** filenames unless matching an existing exception (e.g. legacy `LogoutButton.tsx`).
+- **React components**: **PascalCase** component names in code (`AIReportButton` in `ai-report-button.tsx` is fine).
+- **Functions / variables**: **camelCase**. Server actions: verb-led names (`upsertTransaction`, `generateAIReport`, `createStripeCheckout`).
+- **Types / interfaces**: **PascalCase**; export result unions for actions when useful (`GenerateAIReportResult`).
+- **Enums in Prisma**: **SCREAMING_SNAKE_CASE** values; TypeScript uses generated enum members from `@prisma/client`.
+- **Constants**: `UPPER_SNAKE` or grouped `export const TRANSACTION_*` objects as in `app/_constants/transactions.ts`.
+
+## Server Actions pattern
+
+- Start file with **`"use server"`**.
+- Resolve session with **`getServerSession(authOptions)`**; return `{ success: false, error: "Unauthorized" }` (or throw only where the codebase already does for Stripe) instead of leaking internals.
+- Validate input with **Zod**; map `ZodError` to a single user-facing message (pt-BR).
+- After mutations, **`revalidatePath`** for affected routes (e.g. `/transactions`).
+- Money in DB: **Prisma `Decimal`**; convert safely for JS math/display (e.g. helpers that normalize to number when needed).
+
+## Domain rules (finance)
+
+- **Transaction types**: `DEPOSIT`, `EXPENSE`, `INVESTMENT` — business logic and aggregations must respect these enums.
+- **Amounts**: Positive numbers in validation; type (deposit vs expense) drives meaning.
+- **Free tier**: Respect **`validateFreePlanTransactionLimit`** (or equivalent) for non-premium users when creating transactions.
+- **Premium**: `session.user.subscriptionStatus === "active"` (and Stripe fields on `User`) drive plan behavior.
+- **Labels / options**: Centralize pt-BR strings for categories, payment methods, and types in **`app/_constants/transactions.ts`** (or the same pattern for new enums).
+
+## AI / insights
+
+- **Provider order**: If **`OPENAI_API_KEY`** is set, prefer OpenAI (`gpt-4o-mini`); else **`GROQ_API_KEY`** (`llama-3.3-70b-versatile`). Encapsulate resolution in one place (`resolveInsightLlm`-style).
+- **OpenAI**: Prefer structured output (`Output.object` + Zod schema) when applicable.
+- **Groq**: JSON-in-text with strict parsing / retry; system prompts specify **Portuguese** output and **English** JSON keys.
+- **Fallback**: When there is no meaningful data, return a **safe default insight** (pt-BR strings) rather than failing the UI.
+- **Client-safe errors**: One generic pt-BR message for failures; log details server-side (`console.error` in Portuguese is acceptable for logs).
+
+## UI (Shadcn + Tailwind)
+
+- Compose styles with **`cn()`**; for interactive primitives use **CVA** (`cva`) variants like existing `Button`.
+- **Theme**: Global look comes from **`app/globals.css`** CSS variables (`--primary`, `--chart-*`, etc.) and **`tailwind.config.ts`** `theme.extend` mapping to `hsl(var(--...))`. Prefer tokens over random hex; new one-off colors must match the design system.
+- **shadcn**: New primitives go under **`app/_components/ui/`**; run generator aligned with **`components.json`** (do not hand-copy outdated patterns).
+- Keep **dark mode** behavior consistent (`class` strategy, `body` uses `dark` where applicable).
+
+## API / webhooks / Stripe
+
+- Webhooks: **`app/api/webhooks/stripe/route.ts`** — verify signatures, idempotency as already implemented.
+- Stripe API version: follow the version already set in code when instantiating `Stripe(...)`.
+
+## Quality bar
+
+- **Strict TypeScript**; no `any` without strong justification.
+- Prefer **existing** helpers (`formatCurrency`, `getMonthDateRange`, etc.) over duplicating logic.
+- **Tests**: Add or update **`*.spec.ts`** when changing critical domain logic (plan limits, AI parsing, actions).
+
+When in doubt, **mirror an adjacent file** in the same folder (same export style, error shape, and import paths).
