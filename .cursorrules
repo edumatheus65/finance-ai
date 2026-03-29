@@ -90,5 +90,54 @@ There is no `hooks/` package yet (`components.json` references `@/hooks`); add h
 - **Strict TypeScript**; no `any` without strong justification.
 - Prefer **existing** helpers (`formatCurrency`, `getMonthDateRange`, etc.) over duplicating logic.
 - **Tests**: Add or update **`*.spec.ts`** when changing critical domain logic (plan limits, AI parsing, actions).
+- **CI parity**: Before pushing to `main` or opening a PR, run the same checks as GitHub Actions (see **Deployment & quality (CI/CD)** below).
 
 When in doubt, **mirror an adjacent file** in the same folder (same export style, error shape, and import paths).
+
+## Deployment & quality (CI/CD)
+
+### ESLint (`pnpm lint` → `next lint`)
+
+- Config: **`.eslintrc.json`** extends **`next/core-web-vitals`** and **`next/typescript`** — the **default Next.js 14** ESLint stack (Core Web Vitals + TypeScript-aware rules). There is **no** separate custom strict ruleset beyond these presets.
+- Goal: **`✔ No ESLint warnings or errors`** (warnings fail the lint step the same as errors with default Next behavior).
+
+### TypeScript
+
+- **`tsc --noEmit` is not a `package.json` script** and is **not** run as its own step in CI.
+- Types are checked during **`pnpm build`** via Next’s **“Linting and checking validity of types”** phase. **`next.config.mjs`** does **not** set `typescript.ignoreBuildErrors`.
+- For a **fast, type-only** check locally without a full production build: **`pnpm exec tsc --noEmit`**.
+- Avoid **`@ts-ignore` / `@ts-expect-error`** unless unavoidable (none expected in routine changes).
+
+### Build (`pnpm build`)
+
+- Script: **`prisma generate && next build`** (standalone output in `next.config.mjs`).
+- Production build must **compile successfully** and complete static generation without type errors. Run **`pnpm build`** locally before merging risky changes.
+
+### Tests (`pnpm test` → `vitest run`)
+
+- **Vitest** with **`happy-dom`**, **`globals: true`**, path alias **`@`** → repo root (`vitest.config.ts`).
+- Colocate tests as **`*.spec.ts`** next to the code under test.
+
+### GitHub Actions (`.github/workflows/ci.yml`)
+
+- **Triggers**: **`push`** and **`pull_request`** targeting **`main`**.
+- **Runner**: `ubuntu-latest`, **Node.js 20**, **pnpm** (`pnpm/action-setup`), **`pnpm install --frozen-lockfile`** (uses **`pnpm-lock.yaml`**).
+- **Steps**: checkout → install → **`pnpm prisma generate`** → **`pnpm lint`** → **`pnpm test`** → **`pnpm build`**.
+- **Concurrency**: same workflow + ref group; **cancel in progress** on newer runs.
+
+### Local commands (green CI / pre-push)
+
+Use **pnpm** (same as CI), Node **20** recommended:
+
+1. `pnpm install --frozen-lockfile` — after clone or lockfile changes.
+2. `pnpm prisma generate` — ensures client matches schema (also runs inside `pnpm build`).
+3. `pnpm lint`
+4. `pnpm test`
+5. `pnpm build`
+
+Optional quicker typecheck: **`pnpm exec tsc --noEmit`** (redundant with a successful `pnpm build` but faster for iteration).
+
+## UX / Performance
+- **Loading States**: Always implement `Skeleton` or `Loading` states (from shadcn) when calling AI actions or Stripe.
+- **Client vs Server**: Default to Server Components; only use `"use client"` when interactivity (hooks, event listeners) is strictly required.
+- **Streaming**: For long AI reports, prefer `streamText` over `generateText` to reduce perceived latency.
