@@ -2,13 +2,19 @@
   "name": "finance-ai",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.26.2",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "NODE_OPTIONS='--disable-warning=DEP0040' next dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "prepare": "husky",
+    "commit-msg-hook": "node ./node_modules/commit-msg-linter/commit-msg-linter.js",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:prod": "prisma migrate deploy",
     "prisma:studio": "prisma studio"

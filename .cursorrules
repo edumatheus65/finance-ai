@@ -125,6 +125,11 @@ When in doubt, **mirror an adjacent file** in the same folder (same export style
 - **Steps**: checkout → install → **`pnpm prisma generate`** → **`pnpm lint`** → **`pnpm test`** → **`pnpm build`**.
 - **Concurrency**: same workflow + ref group; **cancel in progress** on newer runs.
 
+### Package manager pinning
+
+- **`package.json`** sets **`packageManager`** (`pnpm@…`) for **Corepack**; keep it in sync with **`.github/workflows/ci.yml`** (`pnpm/action-setup` `version`) and **`Dockerfile`** (`corepack prepare pnpm@…`). **`toolchain.spec.ts`** asserts these stay aligned.
+- **Husky**: **`.husky/pre-commit`** runs **`pnpm exec lint-staged`**; **`.husky/commit-msg`** runs **`pnpm run commit-msg-hook`**, which executes **`commit-msg-linter/commit-msg-linter.js`** (reads `.git/COMMIT_EDITMSG`). Do **not** use **`pnpm exec commit-msg-linter`** in the hook — that binary targets the SHA-range CLI and breaks with current Git. Do not use **`npx`** in hooks.
+
 ### Local commands (green CI / pre-push)
 
 Use **pnpm** (same as CI), Node **20** recommended:
@@ -132,10 +137,11 @@ Use **pnpm** (same as CI), Node **20** recommended:
 1. `pnpm install --frozen-lockfile` — after clone or lockfile changes.
 2. `pnpm prisma generate` — ensures client matches schema (also runs inside `pnpm build`).
 3. `pnpm lint`
-4. `pnpm test`
-5. `pnpm build`
+4. `pnpm test` (includes **toolchain** checks — lockfile, pinned pnpm, hooks)
+5. `pnpm typecheck` — `tsc --noEmit` (faster than a full build for types-only)
+6. `pnpm build`
 
-Optional quicker typecheck: **`pnpm exec tsc --noEmit`** (redundant with a successful `pnpm build` but faster for iteration).
+Optional: **`pnpm exec tsc --noEmit`** is the same as **`pnpm typecheck`**.
 
 ## UX / Performance
 - **Loading States**: Always implement `Skeleton` or `Loading` states (from shadcn) when calling AI actions or Stripe.

@@ -20,8 +20,8 @@ Aplicação web de gestão financeira pessoal construída com **Next.js 14**, **
 
 ## Pré-requisitos
 
-- [Node.js](https://nodejs.org/) 20+
-- [pnpm](https://pnpm.io/) (gerenciador de pacotes padrão do projeto)
+- [Node.js](https://nodejs.org/) 20+ (`engines.node` em `package.json`)
+- [pnpm](https://pnpm.io/) na versão fixada em **`packageManager`** no `package.json` (recomendado: [Corepack](https://nodejs.org/api/corepack.html) — `corepack enable` para usar a mesma versão que CI e Docker)
 - [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/) (para rodar via container)
 - Conta Google Cloud (para credenciais OAuth)
 - Conta Stripe (para funcionalidades de pagamento)
@@ -64,7 +64,8 @@ A aplicação estará disponível em [http://localhost:3000](http://localhost:30
 pnpm build        # Build de produção
 pnpm start        # Servidor de produção (requer build prévio)
 pnpm lint         # Linting com ESLint
-pnpm test         # Testes com Vitest
+pnpm typecheck    # TypeScript (tsc --noEmit)
+pnpm test         # Testes com Vitest (inclui checagens da toolchain pnpm/CI)
 ```
 
 ---
